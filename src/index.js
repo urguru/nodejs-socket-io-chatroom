@@ -17,8 +17,12 @@ const io = socketio(server);
 
 const port = process.env.PORT;
 const publicDirectoryPath = path.join(__dirname, "../public");
+const view_paths = path.join(__dirname, "../views/layouts");
+const partial_paths = path.join(__dirname, "../views/partials");
 
 app.use(express.static(publicDirectoryPath));
+app.set('view engine','hbs')
+app.set('views',view_paths)
 
 io.on("connection", (socket) => {
   console.log("New web socket connection");
@@ -58,7 +62,8 @@ io.on("connection", (socket) => {
     if (filter.isProfane(text)) {
       return callback("Profanity is not allowed");
     }
-    const user = getUser(socket.id);
+    const user = getUser(socket.id);]
+    
     io.to(user.room).emit("messageToUsers", generateMessage(text),user.username);
     callback();
   });
@@ -76,6 +81,10 @@ io.on("connection", (socket) => {
   });
 });
 
+
+app.get('/*',(req,res)=>{
+    res.render('404')
+})
 server.listen(port, () => {
   console.log(`Server successfully started on port ${port}`);
 });
